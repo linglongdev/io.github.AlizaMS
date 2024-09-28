@@ -1,0 +1,46 @@
+version: "1"
+
+package:
+  id: io.github.AlizaMS
+  name: AlizaMS
+  version: 1.9.10.0
+  kind: app
+  description: |
+    DICOM Viewer
+
+base: org.deepin.foundation/23.0.0
+runtime: org.deepin.Runtime/23.0.1
+
+command:
+  - /opt/apps/io.github.AlizaMS/files/bin/alizams
+
+sources:
+  - kind: git
+    url: https://github.com/AlizaMedicalImaging/AlizaMS.git
+    commit: 784b25b99f8b41fc3eb8b4f124abae04a7ba73d8
+
+  - kind: git
+    url: https://github.com/InsightSoftwareConsortium/ITK.git
+    commit: f8d8cf94c9c316cc6a7c4a28d86105951b5ecb06
+
+
+build: |  
+  cd /project/linglong/sources/ITK.git/
+  cmake -Bbuild \
+        -DBUILD_TESTING:BOOL=OFF \
+        -DCMAKE_BUILD_TYPE:STRING=Release \
+        -DITK_USE_SYSTEM_ZLIB:BOOL=ON \
+        -DCMAKE_INSTALL_PREFIX=${PREFIX} \
+        -DCMAKE_INSTALL_LIBDIR=${PREFIX}/lib/${TRIPLET}
+  cmake --build build
+  cmake --build build --target install
+
+  cd /project/linglong/sources/AlizaMS.git/
+  cmake -Bbuild \
+        -DALIZA_QT_VERSION:STRING=5 \
+        -DCMAKE_BUILD_TYPE:STRING=Release \
+        -DCMAKE_INSTALL_PREFIX=${PREFIX} \
+        -DCMAKE_INSTALL_LIBDIR=${PREFIX}/lib/${TRIPLET}
+  cmake --build build
+  cmake --build build --target install
+
